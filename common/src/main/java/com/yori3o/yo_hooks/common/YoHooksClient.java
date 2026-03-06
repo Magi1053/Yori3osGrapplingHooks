@@ -42,8 +42,6 @@ public class YoHooksClient {
         PlatformKeyMappingRegistry.registerKeyMapping(CLIMB);
         PlatformKeyMappingRegistry.registerKeyMapping(CLIMB_DOWN);
         PlatformKeyMappingRegistry.registerKeyMapping(PREVENT_USE);
-        
-        //ClientPacketReceiver.registerPackets();
     }
     
 }

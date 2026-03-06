@@ -2,7 +2,6 @@ package com.yori3o.yo_hooks.fabric;
 
 
 import com.yori3o.yo_hooks.common.event.EventHandler;
-import com.yori3o.yo_hooks.common.network.ClientPacketReceiver;
 import com.yori3o.yo_hooks.impl.ClientPlatformRegistry;
 import com.yori3o.yo_hooks.impl.CreativeTabRegistry;
 
@@ -15,8 +14,6 @@ public final class YoHooksFabricClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-
-        ClientPacketReceiver.registerPackets();
 
         ClientPlatformRegistry.initClient();
         

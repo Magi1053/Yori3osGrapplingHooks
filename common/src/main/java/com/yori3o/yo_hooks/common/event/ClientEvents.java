@@ -120,8 +120,8 @@ public class ClientEvents {
 
     private static final void applyJumpImpulse(Player player, int agility_level) {
         
-        final double FORWARD_VELOCITY = (0.47 + (agility_level * 0.097)) * PhysicVariables.jumpMultiplier;
-        final double UPWARD_VELOCITY = (0.41 + (agility_level * 0.043)) * PhysicVariables.jumpMultiplier;
+        final double FORWARD_VELOCITY = (0.47 + (agility_level * 0.09)) * PhysicVariables.jumpMultiplier;
+        final double UPWARD_VELOCITY = (0.41 + (agility_level * 0.04)) * PhysicVariables.jumpMultiplier;
         
         Vec3 lookVector = player.getLookAngle();
         Vec3 oldV = player.getDeltaMovement();

@@ -91,8 +91,8 @@ public class PlayerMixin implements PlayerWithHookData {
                 double stretch = dist - MAX_R;
                 if (isClimbingUp) {
                     if (MAX_R > 0.4) {
-                        vTangentialMultiplier = 1.0134;
-                        vRadial = (PhysicVariables.climbSpeed + (agility_level * 0.045)) * PhysicVariables.climbSpeedMultiplier;
+                        vTangentialMultiplier = 1.0084;
+                        vRadial = (PhysicVariables.climbSpeed + (agility_level * 0.041)) * PhysicVariables.climbSpeedMultiplier;
                     } else {
                         ClientEvents.soundCooldown++;
                     }

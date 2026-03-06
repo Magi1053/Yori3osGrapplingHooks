@@ -24,7 +24,6 @@ public class YoHooks {
         LootTableRegistry.load();
 
 		EntityRegistry.register();
-        //ServerPacketReceiver.registerPackets();
 
 		
 		if (PlatformUtil.isClient()) {

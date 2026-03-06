@@ -21,7 +21,7 @@ import net.minecraft.network.FriendlyByteBuf;*/
 
 public class ServerSender {
 
-    public static void SendCommonConfig(ServerPlayer serverPlayer, CommonConfig.Values values) {
+    public static void sendCommonConfig(ServerPlayer serverPlayer, CommonConfig.Values values) {
 
         Gson gson = new Gson();
         byte[] bytes = gson.toJson(values).getBytes(StandardCharsets.UTF_8);

@@ -100,7 +100,7 @@ public class ServerPacketReceiver {
 
                         if (up) {
                             if (hook.getLength() > 0.4) {
-                                hook.setLength((float) (hook.getLength() - ((DynamicConfigHandler.common().climbSpeed + (agility_level * 0.045))) * PhysicVariables.climbSpeedMultiplier) );
+                                hook.setLength((float) (hook.getLength() - ((DynamicConfigHandler.common().climbSpeed + (agility_level * 0.041))) * PhysicVariables.climbSpeedMultiplier) );
                                 if (!player.isCreative() && !DynamicConfigHandler.common().funnyMode) player.getFoodData().addExhaustion((DynamicConfigHandler.server().decreaseSatiety / 75f) + (agility_level * 0.0065f));
                             }
                         } else {

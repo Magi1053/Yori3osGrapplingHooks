@@ -254,7 +254,7 @@ public class ConfigScreen extends Screen {
                 for (ServerPlayer p : players) {
                     if (host != null && p.getUUID().equals(host.getUUID())) continue;
 
-                    ServerSender.SendCommonConfig(p, DynamicConfigHandler.cc.get());
+                    ServerSender.sendCommonConfig(p, DynamicConfigHandler.cc.get());
                 }
             }
 

@@ -17,3 +17,5 @@ classes/
 
 .vscode/
 logs/
+notes
+.architectury-transformer/

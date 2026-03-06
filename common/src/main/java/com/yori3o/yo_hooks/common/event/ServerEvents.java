@@ -26,6 +26,6 @@ public class ServerEvents {
     public static void sendConfigToNewPlayer(ServerPlayer serverPlayer) {
         CommonConfig cc = new CommonConfig();
         cc.load();
-        ServerSender.SendCommonConfig(serverPlayer, cc.get());
+        ServerSender.sendCommonConfig(serverPlayer, cc.get());
     }
 }

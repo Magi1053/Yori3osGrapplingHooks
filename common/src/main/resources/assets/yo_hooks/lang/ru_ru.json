@@ -14,7 +14,7 @@
   "key.yo_hooks.jump": "Прыжок с крюка",
   "key.yo_hooks.climb": "Взобраться по цепи",
   "key.yo_hooks.climb_down": "Спуститься по цепи",
-  "key.yo_hooks.prevent_use": "Отмена использования",
+  "key.yo_hooks.prevent_use": "Блокировать использование",
   "category.yo_hooks": "Yori3o's Grappling Hooks",
   "key.category.yo_hooks.hook": "Yori3o's Grappling Hooks",
   

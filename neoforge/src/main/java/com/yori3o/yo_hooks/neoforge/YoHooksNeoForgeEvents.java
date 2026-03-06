@@ -5,7 +5,6 @@ import com.yori3o.yo_hooks.common.YoHooks;
 import com.yori3o.yo_hooks.common.network.ClientPacketReceiver;
 import com.yori3o.yo_hooks.common.network.ServerPacketReceiver;
 import com.yori3o.yo_hooks.impl.PlatformNetworkHelper;
-import com.yori3o.yo_hooks.impl.PlatformUtil;
 
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -20,8 +19,6 @@ public final class YoHooksNeoForgeEvents {
     private static void onRegisterPayloads(RegisterPayloadHandlersEvent event) {
         PlatformNetworkHelper.init(event);
         ServerPacketReceiver.registerPackets();
-        if (PlatformUtil.isClient()) {
-            ClientPacketReceiver.registerPackets();
-        }
+        ClientPacketReceiver.registerPackets();
     }
 }

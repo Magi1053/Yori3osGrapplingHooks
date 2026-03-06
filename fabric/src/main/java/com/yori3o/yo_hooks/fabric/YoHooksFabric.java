@@ -4,6 +4,7 @@ package com.yori3o.yo_hooks.fabric;
 import com.yori3o.yo_hooks.common.YoHooks;
 import com.yori3o.yo_hooks.common.event.EventHandler;
 import com.yori3o.yo_hooks.common.init.EntityRegistry;
+import com.yori3o.yo_hooks.common.network.ClientPacketReceiver;
 import com.yori3o.yo_hooks.common.network.ServerPacketReceiver;
 import com.yori3o.yo_hooks.impl.LootInjector;
 
@@ -21,6 +22,7 @@ public class YoHooksFabric implements ModInitializer {
 
         EntityRegistry.register();
         ServerPacketReceiver.registerPackets();
+        ClientPacketReceiver.registerPackets();
         
         LootInjector.register();
 

@@ -10,7 +10,7 @@ import java.util.Optional;
 
 
 
-public class PlatformUtil {
+public final class PlatformUtil {
 
     
     public static boolean isModLoaded(String id) {
