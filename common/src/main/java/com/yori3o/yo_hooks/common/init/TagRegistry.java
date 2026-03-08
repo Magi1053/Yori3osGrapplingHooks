@@ -11,6 +11,9 @@ import net.minecraft.world.level.block.Block;
 
 
 public class TagRegistry {
+
+    
     public static final TagKey<Block> FRAGILE_BLOCKS =
             TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(YoHooks.MOD_ID, "fragile"));
+
 }

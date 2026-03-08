@@ -1,8 +1,6 @@
 package com.yori3o.yo_hooks.common.init;
 
 
-import java.util.function.Supplier;
-
 import com.yori3o.yo_hooks.common.YoHooks;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.impl.PlatformEntityRegistry;
@@ -10,6 +8,8 @@ import com.yori3o.yo_hooks.impl.PlatformEntityRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+
+import java.util.function.Supplier;
 
 
 
@@ -30,6 +30,6 @@ public class EntityRegistry {
                     
         );
 
-
     public static void register() {}
+
 }

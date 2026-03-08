@@ -12,11 +12,6 @@ import net.minecraft.server.level.ServerPlayer;
 
 public class ServerEvents {
 
-    /*public static void registerHookHeadsNeoForge() {
-        if (!PlatformUtil.isFabric()) {
-            ItemRegistry.registerHookHeads();
-        }
-    }*/
 
     public static void loadConfigOnServer(MinecraftServer server) {
         DynamicConfigHandler.loadServer();
@@ -28,4 +23,5 @@ public class ServerEvents {
         cc.load();
         ServerSender.sendCommonConfig(serverPlayer, cc.get());
     }
+    
 }

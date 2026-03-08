@@ -1,10 +1,13 @@
 package com.yori3o.yo_hooks.common.util;
 
+
 import java.awt.Desktop;
 import java.io.File;
 
 
+
 public final class FileOpenUtil {
+
 
     public static final void revealConfigFile(File file) {
         String os = System.getProperty("os.name").toLowerCase();
@@ -31,6 +34,5 @@ public final class FileOpenUtil {
             e.printStackTrace();
         }
     }
-
 
 }

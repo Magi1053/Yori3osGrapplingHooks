@@ -1,5 +1,6 @@
 package com.yori3o.yo_hooks.common.event;
 
+
 import com.yori3o.yo_hooks.common.YoHooksClient;
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.item.HookItem;
@@ -11,6 +12,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
+
+
 public class ClientEvents {
 
 
@@ -18,9 +21,6 @@ public class ClientEvents {
     private static final int SOUND_LENGTH_TICKS = 39; // ~2 sec
     private static boolean jumpKeybindWasDown = false;
 
-
-
-    
     
     public static void clientTickStart() {
         Player player = Minecraft.getInstance().player;
@@ -35,9 +35,6 @@ public class ClientEvents {
         }
     }
     
-
-
-
     private static void clientTickKeybindsHandler(Player player, PlayerWithHookData hookData, HookEntity hook) {
         
         boolean down = YoHooksClient.JUMP.isDown();
@@ -81,9 +78,6 @@ public class ClientEvents {
         jumpKeybindWasDown = down;
     }
 
-
-
-
     private static final boolean shouldPlayClimbSound() {
         if (soundCooldown <= 0) {
             soundCooldown = SOUND_LENGTH_TICKS;
@@ -117,7 +111,6 @@ public class ClientEvents {
         }
     }
 
-
     private static final void applyJumpImpulse(Player player, int agility_level) {
         
         final double FORWARD_VELOCITY = (0.47 + (agility_level * 0.09)) * PhysicVariables.jumpMultiplier;
@@ -130,8 +123,8 @@ public class ClientEvents {
         double targetZ = lookVector.z * FORWARD_VELOCITY;
         
         
-        // Мы берем максимальное из: текущая скорость ИЛИ желаемый UPWARD_VELOCITY.
-        // В противном случае прыжок замедлит игрока, если его бывшая скорость была больше
+        // We take the maximum of: current speed OR desired UPWARD_VELOCITY.
+        // Otherwise, the jump will slow down the player if his previous speed was greater
         double newY = Math.max(oldV.y, UPWARD_VELOCITY);
 
         double newX = target((oldV.x + targetX) / 2, targetX);
@@ -140,8 +133,6 @@ public class ClientEvents {
         player.setDeltaMovement(newX, newY, newZ);
         
     }
-
-    
 
     private static final double target(double currentMotion, double target) {
         if (currentMotion >= 0) {

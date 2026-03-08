@@ -1,6 +1,8 @@
 package com.yori3o.yo_hooks.common.hookregistry;
 
 
+import com.yori3o.yo_hooks.impl.PlatformModFileResolver;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -8,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
-import com.yori3o.yo_hooks.impl.PlatformModFileResolver;
 
 
 /**
@@ -20,7 +21,6 @@ public final class LootTableRegistry {
     private static final Gson GSON = new Gson();
 
     public static List<LootTableDefinition> lootTables = new ArrayList<>();
-
 
 
     public static void load() {
@@ -47,4 +47,5 @@ public final class LootTableRegistry {
             }
         }
     }
+    
 }

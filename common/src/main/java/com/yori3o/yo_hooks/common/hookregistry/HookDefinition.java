@@ -1,6 +1,7 @@
 package com.yori3o.yo_hooks.common.hookregistry;
 
 
+
 public class HookDefinition {
 
 
@@ -28,4 +29,5 @@ public class HookDefinition {
 
         if (repairItemsTag == null) repairItemsTag = "";
     }
+
 }

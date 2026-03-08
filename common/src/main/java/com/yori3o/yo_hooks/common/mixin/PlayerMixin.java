@@ -15,10 +15,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 
-
+/**
+ * This mixin is responsible for the physics and logic of the player hanging on the hook.
+ */
 @Mixin(Player.class)
 public class PlayerMixin implements PlayerWithHookData {
     
+
     private HookEntity hookEntity;
     private boolean isJumpAllowed = false;
     private boolean isClimbingUp;
@@ -26,7 +29,6 @@ public class PlayerMixin implements PlayerWithHookData {
     private int agility_level;
 
 
-    
     @Override
     public void setUsingCancelAfterJump(boolean bl) {
         usingCancelAfterJump = bl;
@@ -89,9 +91,14 @@ public class PlayerMixin implements PlayerWithHookData {
 
             if (dist > MAX_R) {
                 double stretch = dist - MAX_R;
+
+                if (stretch >= 0) {
+                    vTangentialMultiplier = 1.047;
+                }
+
                 if (isClimbingUp) {
                     if (MAX_R > 0.4) {
-                        vTangentialMultiplier = 1.0084;
+                        vTangentialMultiplier = 1.013;
                         vRadial = (PhysicVariables.climbSpeed + (agility_level * 0.041)) * PhysicVariables.climbSpeedMultiplier;
                     } else {
                         ClientEvents.soundCooldown++;
@@ -107,21 +114,15 @@ public class PlayerMixin implements PlayerWithHookData {
                     vRadial = Math.max(vRadial, vRadial + stretch * PhysicVariables.stiffness);
                     vRadial = Math.min(vRadial, 1);
                 }
-
-                if (stretch >= 0) {
-                    vTangentialMultiplier = 1.048;
-                }
             }
             
 
-            if (!player.onGround()) vTangential = vTangential.scale(vTangentialMultiplier);
-
-            Vec3 V_new;
-            if (player.onGround()) {
-                V_new = vTangential.add(unitVector.scale(vRadial));
-            } else {
-                V_new = vTangential.add(unitVector.scale(vRadial * 0.99));
+            if (!player.onGround()) {
+                vTangential = vTangential.scale(vTangentialMultiplier);
+                vRadial = vRadial * 0.99;
             }
+
+            Vec3 V_new = vTangential.add(unitVector.scale(vRadial)); 
 
             player.setDeltaMovement(V_new);
 
@@ -149,4 +150,5 @@ public class PlayerMixin implements PlayerWithHookData {
             }
         }
     }
+
 }

@@ -21,6 +21,7 @@ import net.minecraft.network.FriendlyByteBuf;*/
 
 public class ServerSender {
 
+    
     public static void sendCommonConfig(ServerPlayer serverPlayer, CommonConfig.Values values) {
 
         Gson gson = new Gson();
@@ -38,4 +39,5 @@ public class ServerSender {
 
         //ClientPlayNetworking.send(payload); // FOR 1.21.11 fabric
     }
+
 }

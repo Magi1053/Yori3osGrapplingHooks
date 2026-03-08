@@ -18,8 +18,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerGamePacketListenerImpl.class)
 public class ServerGamePacketListenerImplMixin {
 
+
     @Shadow
     private boolean clientIsFloating;
+
 
     @Inject(method = "handleMovePlayer", at = @At("TAIL"))
     private void onTravel(ServerboundMovePlayerPacket serverboundMovePlayerPacket, CallbackInfo ci) {
@@ -34,4 +36,5 @@ public class ServerGamePacketListenerImplMixin {
             }
         }
     }
+    
 }

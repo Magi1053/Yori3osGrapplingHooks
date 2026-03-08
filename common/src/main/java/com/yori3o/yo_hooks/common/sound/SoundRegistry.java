@@ -1,13 +1,14 @@
 package com.yori3o.yo_hooks.common.sound;
 
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.yori3o.yo_hooks.common.hookregistry.HookRegistry;
 import com.yori3o.yo_hooks.impl.PlatformSoundRegistry;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -88,4 +89,5 @@ public class SoundRegistry {
             return HIT;
         }
     }
+
 }

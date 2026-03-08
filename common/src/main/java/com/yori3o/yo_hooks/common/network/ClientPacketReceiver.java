@@ -1,12 +1,12 @@
 package com.yori3o.yo_hooks.common.network;
 
 
-import java.nio.charset.StandardCharsets;
-
-import com.google.gson.Gson;
 import com.yori3o.yo_hooks.common.config.CommonConfig;
 import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
 import com.yori3o.yo_hooks.impl.PlatformNetworkHelper;
+
+import java.nio.charset.StandardCharsets;
+import com.google.gson.Gson;
 
 
 
@@ -30,6 +30,5 @@ public class ClientPacketReceiver {
             }
         );
     }
-
 
 }

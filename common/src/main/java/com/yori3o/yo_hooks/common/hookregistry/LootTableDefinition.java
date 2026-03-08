@@ -13,4 +13,5 @@ public class LootTableDefinition {
         this.lootTable = lootTable;
         this.lootTableForInject = lootTableForInject;
     }
+    
 }

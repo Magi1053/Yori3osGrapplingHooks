@@ -36,7 +36,6 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.UUID;
-
 import org.jetbrains.annotations.Nullable;
 
 

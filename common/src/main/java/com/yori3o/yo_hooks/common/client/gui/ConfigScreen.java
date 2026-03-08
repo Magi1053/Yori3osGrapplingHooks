@@ -1,8 +1,6 @@
 package com.yori3o.yo_hooks.common.client.gui;
 
 
-import java.io.File;
-
 import com.yori3o.yo_hooks.common.config.CommonConfig;
 import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
 import com.yori3o.yo_hooks.common.config.ServerConfig;
@@ -19,6 +17,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+
+import java.io.File;
 
 
 

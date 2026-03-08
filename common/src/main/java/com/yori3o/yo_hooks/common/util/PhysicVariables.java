@@ -4,6 +4,7 @@ package com.yori3o.yo_hooks.common.util;
 
 public class PhysicVariables {
 
+
     public static float jumpMultiplier = 1f;
 
     public static float hookSpeed = 2f;
@@ -16,7 +17,6 @@ public class PhysicVariables {
     public static boolean softHook;
     public static float climbSpeed;
     public static float stiffness;
-
 
 
     public static void updateFunnyModeConfig(boolean funnyMode) {
@@ -39,4 +39,5 @@ public class PhysicVariables {
         PhysicVariables.stiffness = stiffness;
         PhysicVariables.climbSpeed = climbSpeed;
     }
+    
 }

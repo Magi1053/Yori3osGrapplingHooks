@@ -1,9 +1,9 @@
 package com.yori3o.yo_hooks.common.config;
 
 
-import java.nio.file.Path;
-
 import com.yori3o.yo_hooks.impl.PlatformUtil;
+
+import java.nio.file.Path;
 
 
 

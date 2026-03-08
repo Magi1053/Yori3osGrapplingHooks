@@ -1,17 +1,17 @@
 package com.yori3o.yo_hooks.common.init;
 
 
+import com.yori3o.yo_hooks.common.YoHooks;
+import com.yori3o.yo_hooks.common.hookregistry.HookDefinition;
+import com.yori3o.yo_hooks.common.item.HookItem;
+import com.yori3o.yo_hooks.impl.PlatformItemRegistry;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
-
-import com.yori3o.yo_hooks.common.YoHooks;
-import com.yori3o.yo_hooks.common.hookregistry.HookDefinition;
-import com.yori3o.yo_hooks.common.item.HookItem;
-import com.yori3o.yo_hooks.impl.PlatformItemRegistry;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;

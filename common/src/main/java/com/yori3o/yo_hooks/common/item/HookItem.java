@@ -30,6 +30,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 
 public class HookItem extends Item {
 
+    
     private final TagKey<Item> repairTag;
     public final HookDefinition hookDefinition;
 
@@ -59,7 +60,6 @@ public class HookItem extends Item {
         } else {
             
             if (!world.isClientSide && !DynamicConfigHandler.common().funnyMode && !hookDefinition.doesNotConsumeHunger) {
-                //stack.hurtAndBreak(1, player, hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
                 /*stack.hurtAndBreak(1, player, p -> { // FOR 1.20.1
                     p.broadcastBreakEvent(hand == InteractionHand.MAIN_HAND 
                             ? EquipmentSlot.MAINHAND 
@@ -125,8 +125,8 @@ public class HookItem extends Item {
             player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);}
     }
 
-    // FOR 1.20.1
-    //public void appendHoverText(ItemStack stack, Level level, List<Component> tooltip, TooltipFlag flag) {
+    
+    //public void appendHoverText(ItemStack stack, Level level, List<Component> tooltip, TooltipFlag flag) { // FOR 1.20.1
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flags) {
         int range = hookDefinition.length;
         if (PhysicVariables.funnyMode) range = 80;
@@ -139,14 +139,14 @@ public class HookItem extends Item {
     }
     // FOR 1.21.5+
     /*public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext context, 
-            TooltipDisplay tooltipDisplay, Consumer<Component> consumer, TooltipFlag tooltipFlag) {
+                TooltipDisplay tooltipDisplay, Consumer<Component> consumer, TooltipFlag tooltipFlag) {
         int range = hookDefinition.length;
+        if (PhysicVariables.funnyMode) range = 80;
         for (Entry<Holder<Enchantment>> a : stack.getEnchantments().entrySet()) {
             if (a.getKey().getRegisteredName().equals("yo_hooks:long_reach")) {
                 range += (a.getIntValue() * 3.5);
             }
         }
-        if (DynamicConfigHandler.funnyMode) range = 100;
         consumer.accept(Component.translatable("gui.yo_hooks.hooks.desc_1", range).withColor(0xFF5555FF));
     }*/
 
@@ -163,4 +163,5 @@ public class HookItem extends Item {
     public int getEnchantmentValue() {
       return hookDefinition.enchantability;
     }
+
 }

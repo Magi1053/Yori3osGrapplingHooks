@@ -19,6 +19,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 //import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 
 
+
 public class ServerPacketReceiver {
 
 
@@ -125,6 +126,5 @@ public class ServerPacketReceiver {
             }
         );
     }
-
 
 }

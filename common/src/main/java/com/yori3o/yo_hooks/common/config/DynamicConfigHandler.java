@@ -4,7 +4,9 @@ package com.yori3o.yo_hooks.common.config;
 import com.yori3o.yo_hooks.common.util.PhysicVariables;
 
 
-
+/**
+ * This class stores instances of configs that are used everywhere.
+ */
 public class DynamicConfigHandler {
 
 

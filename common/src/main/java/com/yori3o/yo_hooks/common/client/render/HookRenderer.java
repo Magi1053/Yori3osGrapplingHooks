@@ -105,7 +105,7 @@ public class HookRenderer extends EntityRenderer<HookEntity> {
             float ropeAB = length * 2.5f + ropeAA;
 
 
-            // 7. кастомная текстура, если customVisual
+            // 7. custom texture if customVisual true
             ResourceLocation ropeTexture = null;
             String hookMaterial = hookEntity.getHookItemMaterial();
             if (HookRegistry.hookMaterialsWithCustomVisuals.contains(hookMaterial)) {
@@ -114,7 +114,7 @@ public class HookRenderer extends EntityRenderer<HookEntity> {
                 ropeTexture = ResourceLocation.fromNamespaceAndPath("yo_hooks", "textures/entity/hook_rope.png");
             }
 
-            // 8. Получение буфера и отрисовка вершин
+            // 8. Obtaining a buffer and rendering vertices
             VertexConsumer vertexConsumer = bufferSource.getBuffer(
                 RenderType.entityCutoutNoCull(ropeTexture)
             );

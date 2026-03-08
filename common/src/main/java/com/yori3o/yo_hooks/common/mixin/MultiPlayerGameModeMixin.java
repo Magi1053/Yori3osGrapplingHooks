@@ -20,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(MultiPlayerGameMode.class)
 public abstract class MultiPlayerGameModeMixin {
 
+    
     @Inject(method = "useItem", at = @At("HEAD"), cancellable = true)
     private void cancelHookUse(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
 
@@ -29,4 +30,5 @@ public abstract class MultiPlayerGameModeMixin {
             cir.setReturnValue(InteractionResult.PASS);
         }
     }
+
 }

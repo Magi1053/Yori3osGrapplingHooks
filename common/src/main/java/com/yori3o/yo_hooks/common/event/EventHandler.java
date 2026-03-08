@@ -12,10 +12,6 @@ import net.minecraft.server.level.ServerPlayer;
 public class EventHandler {
 
 
-    /*public static void onSetupNeoForge() {
-        ServerEvents.registerHookHeadsNeoForge();
-    }*/
-
     public static void onServerStarted(MinecraftServer server) {
         ServerEvents.loadConfigOnServer(server);
     }
@@ -27,12 +23,5 @@ public class EventHandler {
     public static void whenClientTickStart() {
         ClientEvents.clientTickStart();
     }
-
-
-
-
-    //public static void whenRegisterPayloads() {
-      //  ServerEvents.registerPayloads();
-    //}
 
 }

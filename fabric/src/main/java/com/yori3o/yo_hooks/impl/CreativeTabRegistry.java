@@ -14,7 +14,6 @@ import java.util.function.Supplier;
 
 import com.yori3o.yo_hooks.common.YoHooks;
 import com.yori3o.yo_hooks.common.init.ItemRegistry;
-import com.yori3o.yo_hooks.common.item.HookItem;
 
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
