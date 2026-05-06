@@ -1,5 +1,6 @@
 package com.yori3o.yo_hooks.impl;
 
+
 import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.item.HookItem;
 import com.yori3o.yo_hooks.common.init.EntityRegistry;

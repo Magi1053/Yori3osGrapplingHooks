@@ -1,7 +1,10 @@
 package com.yori3o.yo_hooks.mixin;
 
 import net.minecraft.client.KeyMapping;
+
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.platform.InputConstants;
+import com.yori3o.yo_hooks.impl.PlatformUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,11 +15,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 
 
 
 @Mixin(KeyMapping.class)
 public abstract class KeyMappingMixin {
+
 
     @Shadow private InputConstants.Key key;
 
@@ -32,7 +37,6 @@ public abstract class KeyMappingMixin {
         at = @At(value = "INVOKE", target = "Ljava/util/Map;put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", ordinal = 1)
     )
     private Object redirectMapPut(Map<InputConstants.Key, KeyMapping> map, Object key, Object value) {
-        
         KeyMapping mapping = (KeyMapping) value;
         InputConstants.Key inputKey = (InputConstants.Key) key;
 
@@ -42,37 +46,51 @@ public abstract class KeyMappingMixin {
 
         return map.put(inputKey, mapping);
     }
-
 
     /**
     *    This mixin activates custom keybinds from a custom map.
     */
     @Inject(method = "set", at = @At("TAIL"))
     private static void yo$afterSet(InputConstants.Key key, boolean down, CallbackInfo ci) {
-        
         KeyMapping km = YO_MAP.get(key);
         if (km != null) {
             km.setDown(down);
         }
     }
 
-
     /**
     *    This 2 mixins is needed for the reload to work correctly, i.e. when the player changes the key to another.
     */
-    @Redirect(
+    /*@Redirect(
         method = "resetMapping",
         at = @At(value = "INVOKE", target = "Ljava/util/Map;put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")
     )
     private static Object redirectResetPut(Map<InputConstants.Key, KeyMapping> map, Object key, Object value) {
-        
         KeyMapping mapping = (KeyMapping) value;
         InputConstants.Key inputKey = (InputConstants.Key) key;
 
         if (mapping.getName().startsWith("key.yo_hooks.")) {
             return YO_MAP.put(inputKey, mapping);
         }
+        if (PlatformUtil.isModLoaded("cosmetica")) {
+            return CosmeticaCompat.customCosmeticaRedirect(map, inputKey, mapping);
+        }
         return map.put(inputKey, mapping);
+    }*/
+    @WrapOperation(
+        method = "resetMapping",
+        at = @At(value = "INVOKE", target = "Ljava/util/Map;put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")
+    )
+    private static Object wrapPut(Map map, Object key, Object value, Operation<Object> original) {
+
+        KeyMapping mapping = (KeyMapping) value;
+        InputConstants.Key inputKey = (InputConstants.Key) key;
+
+        if (mapping.getName().startsWith("key.yo_hooks.")) {
+            return YO_MAP.put(inputKey, mapping);
+        }
+
+        return original.call(map, key, value);
     }
 
     @Inject(
@@ -83,5 +101,4 @@ public abstract class KeyMappingMixin {
         YO_MAP.clear();
     }
     
-
 }

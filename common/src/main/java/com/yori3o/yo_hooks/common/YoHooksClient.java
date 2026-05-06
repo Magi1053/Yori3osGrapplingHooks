@@ -1,9 +1,11 @@
 package com.yori3o.yo_hooks.common;
 
 
+import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
 import com.yori3o.yo_hooks.impl.PlatformKeyMappingRegistry;
 
 import net.minecraft.client.KeyMapping;
+
 import com.mojang.blaze3d.platform.InputConstants;
 
 
@@ -11,7 +13,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 public class YoHooksClient {
     
 
-    public static final KeyMapping JUMP = new KeyMapping(
+public static final KeyMapping JUMP = new KeyMapping(
         "key.yo_hooks.jump",
         InputConstants.Type.KEYSYM,
         InputConstants.KEY_SPACE,
@@ -42,6 +44,9 @@ public class YoHooksClient {
         PlatformKeyMappingRegistry.registerKeyMapping(CLIMB);
         PlatformKeyMappingRegistry.registerKeyMapping(CLIMB_DOWN);
         PlatformKeyMappingRegistry.registerKeyMapping(PREVENT_USE);
+        
+        DynamicConfigHandler.loadClient();
+
     }
     
 }

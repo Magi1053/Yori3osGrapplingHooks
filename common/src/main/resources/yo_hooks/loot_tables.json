@@ -26,5 +26,13 @@
   {
     "lootTable": "yo_hooks:minecraft/end_city_treasure",
     "lootTableForInject": "minecraft:chests/end_city_treasure"
+  },
+  {
+    "lootTable": "yo_hooks:minecraft/village_weaponsmith",
+    "lootTableForInject": "minecraft:chests/village/village_weaponsmith"
+  },
+  {
+    "lootTable": "yo_hooks:minecraft/intersection_barrel",
+    "lootTableForInject": "minecraft:chests/trial_chambers/intersection_barrel"
   }
 ]

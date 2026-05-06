@@ -8,10 +8,13 @@ import com.yori3o.yo_hooks.impl.PlatformEntityRegistry;
 import com.yori3o.yo_hooks.impl.PlatformItemRegistry;
 
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 
@@ -29,8 +32,8 @@ public final class YoHooksNeoForge {
         PlatformEntityRegistry.ENTITIES.register(modEventBus);
 
         NeoForge.EVENT_BUS.addListener(this::tick);
-
         NeoForge.EVENT_BUS.addListener(this::onPlayerJoin);
+        NeoForge.EVENT_BUS.addListener(this::onLivingDeath);
 
     }
 
@@ -41,6 +44,14 @@ public final class YoHooksNeoForge {
 
     private void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
         EventHandler.whenPlayerJoinToServer((ServerPlayer)event.getEntity());
+    }
+
+    private void onLivingDeath(LivingDeathEvent event) {
+        LivingEntity entity = event.getEntity();
+        
+        if (entity instanceof Player player) {
+                EventHandler.whenPlayerDie(player, event.getSource());
+            }
     }
     
 }

@@ -1,14 +1,14 @@
 package com.yori3o.yo_hooks.common.hookregistry;
 
 
-import com.yori3o.yo_hooks.impl.PlatformModFileResolver;
+import com.yori3o.yo_hooks.common.util.LoggerUtil;
+import com.yori3o.yo_hooks.common.util.ResourceResolver;
 
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.google.gson.Gson;
 
 
@@ -24,16 +24,10 @@ public final class LootTableRegistry {
 
 
     public static void load() {
-
-        List<InputStream> files =
-                PlatformModFileResolver.findFiles("yo_hooks/loot_tables.json");
-
-        for (InputStream stream : files) {
-
-            try (Reader reader = new InputStreamReader(stream)) {
-
-                LootTableDefinition[] array =
-                        GSON.fromJson(reader, LootTableDefinition[].class);
+        List<URL> urls = ResourceResolver.findFiles("yo_hooks/loot_tables.json");
+        for (URL url : urls) {
+            try (Reader reader = new InputStreamReader(url.openStream())) {
+                LootTableDefinition[] array = GSON.fromJson(reader, LootTableDefinition[].class);
 
                 if (array != null) {
                     for (LootTableDefinition def : array) {
@@ -41,9 +35,8 @@ public final class LootTableRegistry {
                         lootTables.add(def);
                     }
                 }
-
             } catch (Exception e) {
-                throw new RuntimeException("Failed to parse loot_tables.json", e);
+                LoggerUtil.errorWithException("Failed to parse loot_tables.json: ", e);
             }
         }
     }

@@ -5,11 +5,10 @@ import com.yori3o.yo_hooks.common.entity.HookEntity;
 import com.yori3o.yo_hooks.common.item.HookItem;
 import com.yori3o.yo_hooks.common.init.EntityRegistry;
 import com.yori3o.yo_hooks.common.init.ItemRegistry;
-
-import java.util.function.Supplier;
-
 import com.yori3o.yo_hooks.common.client.render.HookRenderer;
 import com.yori3o.yo_hooks.common.util.PlayerWithHookData;
+
+import java.util.function.Supplier;
 
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.world.entity.player.Player;

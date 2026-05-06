@@ -3,6 +3,7 @@ package com.yori3o.yo_hooks.common.entity;
 
 import com.yori3o.yo_hooks.common.config.DynamicConfigHandler;
 import com.yori3o.yo_hooks.common.item.HookItem;
+import com.yori3o.yo_hooks.common.mixin.RedStoneOreBlockAccessor;
 import com.yori3o.yo_hooks.common.sound.SoundRegistry;
 import com.yori3o.yo_hooks.common.init.EntityRegistry;
 import com.yori3o.yo_hooks.common.init.ItemRegistry;
@@ -26,13 +27,12 @@ import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.FallingBlock;
+import net.minecraft.world.level.block.RedStoneOreBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.UUID;
@@ -41,6 +41,7 @@ import org.jetbrains.annotations.Nullable;
 
 
 public class HookEntity extends ThrowableProjectile {
+
 
     private static final EntityDataAccessor<Boolean> IN_BLOCK =
             SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.BOOLEAN);
@@ -58,35 +59,29 @@ public class HookEntity extends ThrowableProjectile {
             SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Integer> AGILITY_LEVEL = 
             SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> DAMAGE = 
-            SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.INT);
             
-    public static boolean shouldCancelFootstepsSubtitle = false;
+    public int damageOnHit = 1;
+    private boolean hookedOnFallingBlock = false;
 
 
-    // 1. КОНСТРУКТОР ДЛЯ РЕГИСТРАЦИИ
     public HookEntity(EntityType<? extends HookEntity> type, Level level) {
-        super((EntityType<? extends ThrowableProjectile>) type, level); // каст к родительскому типу
+        super((EntityType<? extends ThrowableProjectile>) type, level);
         this.noCulling = true;
     }
 
-
-
-    // 2. КОНСТРУКТОР ДЛЯ ЗАПУСКА СУЩНОСТЬЮ (например, игроком)
-    public HookEntity(Level level, LivingEntity owner, int hookRange, ItemStack itemStack, int agility_level, boolean gentle_touch, int damageOnHit) {
+    public HookEntity(Level level, LivingEntity owner, int hookRange, ItemStack itemStack, int agilityLevel, boolean gentleTouch, int damageOnHit) {
         this(EntityRegistry.HOOK_ENTITY.get(), level);
         this.setOwner(owner);
         this.setPos(owner.getX(), owner.getEyeY(), owner.getZ());
         this.setMaxRange(hookRange);
         this.setHookItemMaterial(((HookItem)(itemStack.getItem())).hookDefinition.id);
         this.setPlayerUUID(owner.getUUID().toString());
-        this.setAgilityLevel(agility_level); 
-        this.setGentleTouch(gentle_touch);
-        this.setDamageOnhit(damageOnHit);
-        this.setDeltaMovement(owner.getLookAngle().scale(PhysicVariables.hookSpeed + (agility_level * 0.25)));
+        this.setAgilityLevel(agilityLevel); 
+        this.setGentleTouch(gentleTouch);
+        this.damageOnHit = damageOnHit;
+        this.setDeltaMovement(owner.getLookAngle().scale(PhysicVariables.hookSpeed + (agilityLevel * 0.25)));
     }
     
-
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(IN_BLOCK, false);
@@ -97,23 +92,9 @@ public class HookEntity extends ThrowableProjectile {
         builder.define(PLAYER_UUID, "");
         builder.define(GENTLE_TOUCH, false);
         builder.define(AGILITY_LEVEL, 0);
-        builder.define(DAMAGE, 1);
     }
-    // FOR 1.20.1
-    /*@Override
-    protected void defineSynchedData() {
-        this.entityData.define(IN_BLOCK, false);
-        this.entityData.define(LENGTH, 0.0F);
-        this.entityData.define(HOOK_RANGE, 0);
-        this.entityData.define(HOOK_ITEM_MATERIAL, "");
-        this.entityData.define(BLOCK_POS, new BlockPos(0, -99999, 0));
-        this.entityData.define(PLAYER_UUID, "");
-        this.entityData.define(GENTLE_TOUCH, false);
-        this.entityData.define(AGILITY_LEVEL, 0);
-        this.entityData.define(DAMAGE, 0);
-    }*/
 
-
+    // important: hook entity ticks at intervals of 5 ticks
     @Override
     public void tick() {
         super.tick();
@@ -135,9 +116,10 @@ public class HookEntity extends ThrowableProjectile {
             } else {
                 return;
             }
+            
         }
 
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             
             if (this.discardIfInvalid(owner)) {
                 return;
@@ -146,7 +128,10 @@ public class HookEntity extends ThrowableProjectile {
             if (this.entityData.get(BLOCK_POS).getY() != -99999) {
                 if (this.level().getBlockState(this.entityData.get(BLOCK_POS)).isAir() && this.isNoGravity()) {
                     this.discard();
-                    ((PlayerWithHookData) owner).setHook(null);
+                    if (hookedOnFallingBlock) {
+                        ((PlayerWithHookData) owner).setSuddenFall(true);
+                        hookedOnFallingBlock = false;
+                    }
                     return;
                 }
             }
@@ -155,7 +140,7 @@ public class HookEntity extends ThrowableProjectile {
                 ((PlayerWithHookData) owner).setHook(this);
             }
 
-            if (Math.random() > 0.9955) {
+            if (this.random.nextFloat() > 0.9955) {
                 this.level().playSound(null,
                     this,
                     SoundRegistry.getAmbientSound(getHookItemMaterial()),
@@ -163,14 +148,6 @@ public class HookEntity extends ThrowableProjectile {
                     1.0f, 1.0f
                 );
             }
-            
-
-            HitResult hitResult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
-            if (hitResult.getType() != HitResult.Type.MISS) {
-                this.onHit(hitResult);
-            }
-
-            this.checkInsideBlocks();
         }
     }
 
@@ -179,6 +156,7 @@ public class HookEntity extends ThrowableProjectile {
                 || !((player.getMainHandItem().getItem() instanceof HookItem) 
                 || (player.getOffhandItem().getItem() instanceof HookItem)) 
                 || this.distanceTo(player) > getMaxRange()) {
+            ((PlayerWithHookData) player).setHook(null);
             this.discard();
             return true;
         }
@@ -200,13 +178,14 @@ public class HookEntity extends ThrowableProjectile {
         
         if (entity == this.getOwner()) return false;
         if (!entity.isAlive()) return false;
+        if (entity.getFirstPassenger() == this.getOwner()) return false;
 
         return entity instanceof LivingEntity;
     }
 
     @Override
     protected void onHitEntity(EntityHitResult result) {
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             Entity target = result.getEntity();
 
             if (target instanceof LivingEntity living) {
@@ -214,71 +193,69 @@ public class HookEntity extends ThrowableProjectile {
 
                 DamageSource source = this.damageSources().thrown(this, owner);
 
-                living.hurt(source, getDamageOnhit());
+                living.hurt(source, damageOnHit);
+
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.25f));
             }
         }
     }
 
-
-
+    
     @Override
     protected void onHitBlock(BlockHitResult result) {
         super.onHitBlock(result);
 
-        setBlockPos(result.getBlockPos());
+        if (!level().isClientSide()) {
 
-        Player player = this.getPlayerOwner();
-        if (player == null) return;
+            setBlockPos(result.getBlockPos());
 
-        Level level = this.level();
+            Player player = this.getPlayerOwner();
+            if (player == null) return;
 
-        BlockPos pos = this.entityData.get(BLOCK_POS);
-        BlockState bs = level.getBlockState(pos);
+            Level level = this.level();
 
-        if (!DynamicConfigHandler.server().blocksBlacklist.isEmpty()) {
-            boolean isThisBlockBanned = (DynamicConfigHandler.server().blocksBlacklist.contains(bs.getBlockHolder().getRegisteredName()));
-            if (DynamicConfigHandler.server().whitelistMode) isThisBlockBanned = !isThisBlockBanned;
-            if (isThisBlockBanned) {
-                this.discard();
-                ((PlayerWithHookData) player).setHook(null);
-                return;
-            }
-        }
+            BlockPos pos = this.entityData.get(BLOCK_POS);
+            BlockState bs = level.getBlockState(pos);
 
-        if (DynamicConfigHandler.server().breakingFragileBlocks) {
-            if (!this.isGentleTouch()) {
-
-                if (bs.is(TagRegistry.FRAGILE_BLOCKS)) {
-                    level.destroyBlock(pos, true);
+            if (!DynamicConfigHandler.server().blocksBlacklist.isEmpty()) {
+                boolean isThisBlockBanned = (DynamicConfigHandler.server().blocksBlacklist.contains(bs.getBlockHolder().getRegisteredName()));
+                if (DynamicConfigHandler.server().whitelistMode) isThisBlockBanned = !isThisBlockBanned;
+                if (isThisBlockBanned) {
                     this.discard();
                     ((PlayerWithHookData) player).setHook(null);
                     return;
                 }
-                if (bs.getBlock() instanceof FallingBlock) {
-                    level.scheduleTick(pos, bs.getBlock(), 1);
+            }
+
+            if (!DynamicConfigHandler.common().funnyMode) {
+                if (!player.isCreative()) {
+                    ItemStack stack = player.getMainHandItem();
+                    EquipmentSlot hand = EquipmentSlot.MAINHAND;
+                    if (!(stack.getItem() instanceof HookItem)) {
+                        stack = player.getOffhandItem();
+                        hand = EquipmentSlot.OFFHAND;
+                    }
+                    stack.hurtAndBreak(1, player, hand);
                 }
             }
-        }
-        if (!DynamicConfigHandler.common().funnyMode) {
-            if (!player.isCreative()) {
-
-                ItemStack stack = player.getMainHandItem();
-                EquipmentSlot hand = EquipmentSlot.MAINHAND;
-                if (!(stack.getItem() instanceof HookItem)) {
-                    stack = player.getOffhandItem();
-                    hand = EquipmentSlot.OFFHAND;
+            if (DynamicConfigHandler.server().breakingFragileBlocks) {
+                if (!this.isGentleTouch()) {
+                    if (bs.is(TagRegistry.FRAGILE_BLOCKS)) {
+                        level.destroyBlock(pos, true);
+                        this.discard();
+                        ((PlayerWithHookData) player).setHook(null);
+                        ((PlayerWithHookData) player).setSuddenFall(true);
+                        return;
+                    }
+                    if (bs.getBlock() instanceof FallingBlock) {
+                        level.scheduleTick(pos, bs.getBlock(), 1);
+                        hookedOnFallingBlock = true;
+                    } else if (bs.getBlock() instanceof RedStoneOreBlock) {
+                        RedStoneOreBlockAccessor.interact(bs, level, pos);
+                    }
                 }
-
-                stack.hurtAndBreak(1, player, hand);
             }
-        }
 
-        /*level.playSound(null,
-                getX(), getY(), getZ(),
-                bs.getSoundType().getStepSound(),
-                SoundSource.PLAYERS,
-                0.4f, 1.15f
-            );*/
             level.playSound(null,
                 getX(), getY(), getZ(),
                 bs.getSoundType().getHitSound(),
@@ -292,16 +269,16 @@ public class HookEntity extends ThrowableProjectile {
                 0.26f, 1f
             );
 
-        this.setDeltaMovement(Vec3.ZERO);
-        this.setInBlock(true);
-        this.setPos(result.getLocation()); // Устанавливаем точную позицию попадания
-        this.setNoGravity(true);
-        
-        if (player != null) {
-            double dist = player.getEyePosition().subtract(result.getLocation()).length();
-            this.setLength((float)dist);
+            this.setDeltaMovement(Vec3.ZERO);
+            this.setInBlock(true);
+            this.setPos(result.getLocation());
+            this.setNoGravity(true);
+            
+            if (player != null) {
+                double dist = player.getEyePosition().subtract(result.getLocation()).length();
+                this.setLength((float)dist);
+            }
         }
-        
     }
 
     @Override
@@ -315,7 +292,6 @@ public class HookEntity extends ThrowableProjectile {
         tag.putInt("hook_pos_z", this.getPosZ());
         tag.putString("player_uuid", this.getPlayerUUID());
         tag.putInt("agility_level", this.getAgilityLevel());
-        //tag.putInt("damage_on_hit", this.getDamageOnhit());
     }
 
     @Override
@@ -327,7 +303,6 @@ public class HookEntity extends ThrowableProjectile {
         this.setBlockPos(new BlockPos(tag.getInt("hook_pos_x"), tag.getInt("hook_pos_y"), tag.getInt("hook_pos_z")));
         this.setPlayerUUID(tag.getString("player_uuid"));
         this.setAgilityLevel(tag.getInt("agility_level"));
-        //this.setDamageOnhit(tag.getInt("damage_on_hit"));
     }
 
     // --- in block flag ---
@@ -426,16 +401,6 @@ public class HookEntity extends ThrowableProjectile {
 
 
 
-    // --- amount damage on hit ---
-    private void setDamageOnhit(int level) {
-        this.entityData.set(DAMAGE, level);
-    }
-    public int getDamageOnhit() {
-        return this.entityData.get(DAMAGE);
-    }
-
-
-
 
     @Override
     protected Entity.MovementEmission getMovementEmission() {
@@ -452,9 +417,6 @@ public class HookEntity extends ThrowableProjectile {
     public void setOwner(@Nullable Entity entity) {
         super.setOwner(entity);
         this.setHookForPlayer(this);
-        if (entity == null) {
-        }
-        
     }
 
     private void setHookForPlayer(@Nullable HookEntity hookEntity) {
@@ -467,15 +429,16 @@ public class HookEntity extends ThrowableProjectile {
     @Nullable
     public Player getPlayerOwner() {
         Entity entity = this.getOwner();
-        if (entity == null) {
-        }
-        
-        return entity instanceof Player ? (Player) entity : null;
+        return (entity instanceof Player player) ? player : null;
     }
     
-
     @Override
     public boolean shouldBeSaved() {
         return true;
+    }
+
+    @Override
+    public boolean canUsePortal(boolean ignorePassenger) {
+        return false;
     }
 }

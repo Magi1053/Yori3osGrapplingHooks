@@ -27,6 +27,9 @@ public class PlayerMixin implements PlayerWithHookData {
     private boolean isClimbingUp;
     private boolean usingCancelAfterJump;
     private int agility_level;
+    
+    
+    private boolean suddenFall = false;
 
 
     @Override
@@ -38,19 +41,16 @@ public class PlayerMixin implements PlayerWithHookData {
         return usingCancelAfterJump;
     }
 
-
     @Override
     public boolean isJumpAllowed() {
         return this.isJumpAllowed;
     }
-
 
     @Override
     public void setClimbing(boolean up, int level) {
         agility_level = level;
         isClimbingUp = up;
     }
-
 
     @Override
     public void setHook(HookEntity value) {
@@ -61,6 +61,14 @@ public class PlayerMixin implements PlayerWithHookData {
         return this.hookEntity;
     }
 
+    @Override
+    public void setSuddenFall(boolean bool) {
+        suddenFall = bool;
+    }
+    @Override
+    public boolean isSuddenFall() {
+        return suddenFall;
+    }
 
     @Inject(method = "travel", at = @At("HEAD"))
     private void onTravel(Vec3 travelVector, CallbackInfo ci) {
@@ -68,6 +76,7 @@ public class PlayerMixin implements PlayerWithHookData {
 
         // --- HOOK HANDLING ---
         if (this.hookEntity != null && this.hookEntity.isInBlock()) {
+        
 
             // --- variables ---
             Vec3 hookPos = this.hookEntity.position();
@@ -82,23 +91,17 @@ public class PlayerMixin implements PlayerWithHookData {
             double vRadial = V.dot(unitVector);
             Vec3 vTangential = V.subtract(unitVector.scale(vRadial));
 
-            double vTangentialMultiplier = 1.0;
-
-            if (!player.isFallFlying()) {
-                vTangentialMultiplier = 1.0204;
-            }
+            double vTangentialMultiplier = 1.01;
 
 
             if (dist > MAX_R) {
                 double stretch = dist - MAX_R;
 
-                if (stretch >= 0) {
-                    vTangentialMultiplier = 1.047;
-                }
+                vTangentialMultiplier = 1.047;
 
                 if (isClimbingUp) {
                     if (MAX_R > 0.4) {
-                        vTangentialMultiplier = 1.013;
+                        vTangentialMultiplier = 1.017;
                         vRadial = (PhysicVariables.climbSpeed + (agility_level * 0.041)) * PhysicVariables.climbSpeedMultiplier;
                     } else {
                         ClientEvents.soundCooldown++;
@@ -106,18 +109,16 @@ public class PlayerMixin implements PlayerWithHookData {
                 }
 
                 if (!PhysicVariables.softHook) {
-                    if (stretch >= 0) {
-                        double new_vRadial = stretch * 0.055;
-                        if (!(vRadial > new_vRadial)) vRadial = new_vRadial;
-                    }
+                    double new_vRadial = stretch * 0.055;
+                    if (!(vRadial > new_vRadial)) vRadial = new_vRadial;
                 } else { // soft mode
                     vRadial = Math.max(vRadial, vRadial + stretch * PhysicVariables.stiffness);
                     vRadial = Math.min(vRadial, 1);
                 }
             }
-            
 
-            if (!player.onGround()) {
+
+            if (!player.onGround() && !player.isFallFlying()) {
                 vTangential = vTangential.scale(vTangentialMultiplier);
                 vRadial = vRadial * 0.99;
             }
@@ -128,8 +129,7 @@ public class PlayerMixin implements PlayerWithHookData {
 
 
 
-
-            if (player.level().isClientSide) {
+            if (player.level().isClientSide()) {
                 // --- client logic for allowing jump ---
                 if (unitVector.y > -0.15 || PhysicVariables.jumpAlwaysAllowed) {
                     isJumpAllowed = true;
@@ -140,15 +140,16 @@ public class PlayerMixin implements PlayerWithHookData {
                 // --- server logic for fall damage reset ---
                 if (PhysicVariables.jumpAlwaysAllowed) {
                     player.resetFallDistance();
-                } else {
-                    if (unitVector.y > -0.15) { 
-                        if ((dist + 0.5) > MAX_R)
+                }
+                if (!player.onGround()) {
+                    player.hurtMarked = false;
+                    if ((dist + 0.6) > MAX_R) {
+                        if (unitVector.y > -0.15) { 
                             player.resetFallDistance();
+                        }
                     }
                 }
-                if (!player.onGround()) player.hurtMarked = false;
             }
         }
     }
-
 }

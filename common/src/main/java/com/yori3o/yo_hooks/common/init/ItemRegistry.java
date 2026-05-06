@@ -53,7 +53,6 @@ public class ItemRegistry {
         if (!repairItemsTag.isEmpty()) {
             tag = TagKey.create(Registries.ITEM, ResourceLocation.parse(repairItemsTag));
 
-            // 1.21.11, also add .enchantable and .setId
             //hookHeadProperties = hookHeadProperties.repairable(tag);
             //hookProperties = hookProperties.repairable(tag);
         }

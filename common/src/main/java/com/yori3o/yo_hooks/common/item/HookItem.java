@@ -33,6 +33,8 @@ public class HookItem extends Item {
     
     private final TagKey<Item> repairTag;
     public final HookDefinition hookDefinition;
+    
+    public Integer lengthOverlap;
 
     
     public HookItem(Properties properties, TagKey<Item> repairTag, HookDefinition hookDefinition) {
@@ -53,18 +55,10 @@ public class HookItem extends Item {
             return InteractionResultHolder.pass(stack);
         }
 
-
         if (hook != null) {
-            
             discard(world, player, hook);
         } else {
-            
-            if (!world.isClientSide && !DynamicConfigHandler.common().funnyMode && !hookDefinition.doesNotConsumeHunger) {
-                /*stack.hurtAndBreak(1, player, p -> { // FOR 1.20.1
-                    p.broadcastBreakEvent(hand == InteractionHand.MAIN_HAND 
-                            ? EquipmentSlot.MAINHAND 
-                            : EquipmentSlot.OFFHAND);
-                });*/
+            if (!world.isClientSide() && !DynamicConfigHandler.common().funnyMode && !hookDefinition.doesNotConsumeHunger) {
                 player.causeFoodExhaustion(DynamicConfigHandler.server().decreaseSatiety / 1.5f);
             }
             fire(world, player, stack);
@@ -74,10 +68,9 @@ public class HookItem extends Item {
     }
 
     private void fire(Level world, Player player, ItemStack stack) {
-        
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
 
-            int range = hookDefinition.length;
+            int range = this.getBasicLength();
             int agilityLevel = 0;
             boolean gentleTouch = false;
 
@@ -107,12 +100,13 @@ public class HookItem extends Item {
                     SoundSource.PLAYERS,
                     0.7f, 1.0f
             );
-            player.gameEvent(GameEvent.ITEM_INTERACT_START);}
+            player.gameEvent(GameEvent.ITEM_INTERACT_START);
+        }
     }
 
     private void discard(Level world, Player player, HookEntity hook) {
         ((PlayerWithHookData) player).setHook(null);
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             
             hook.discard();
         
@@ -122,33 +116,41 @@ public class HookItem extends Item {
                     SoundSource.PLAYERS,
                     1.0f, 1.0f
             );
-            player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);}
+            player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
+        }
     }
 
-    
-    //public void appendHoverText(ItemStack stack, Level level, List<Component> tooltip, TooltipFlag flag) { // FOR 1.20.1
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flags) {
-        int range = hookDefinition.length;
-        if (PhysicVariables.funnyMode) range = 80;
-        for (Entry<Holder<Enchantment>> a : stack.getEnchantments().entrySet()) {
-            if (a.getKey().getRegisteredName().equals("yo_hooks:long_reach")) {
-                range += (int)(a.getIntValue() * 3.5);
-            }
-        }
-        tooltip.add(Component.translatable("gui.yo_hooks.hooks.desc_1", range).withColor(0xFF5555FF));
-    }
-    // FOR 1.21.5+
-    /*public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext context, 
-                TooltipDisplay tooltipDisplay, Consumer<Component> consumer, TooltipFlag tooltipFlag) {
-        int range = hookDefinition.length;
+        int range = this.getBasicLength();
         if (PhysicVariables.funnyMode) range = 80;
         for (Entry<Holder<Enchantment>> a : stack.getEnchantments().entrySet()) {
             if (a.getKey().getRegisteredName().equals("yo_hooks:long_reach")) {
                 range += (a.getIntValue() * 3.5);
             }
         }
-        consumer.accept(Component.translatable("gui.yo_hooks.hooks.desc_1", range).withColor(0xFF5555FF));
-    }*/
+        tooltip.add(Component.translatable("gui.yo_hooks.hooks.desc_1", range).withColor(0xFF5555FF));
+        if (this.hookDefinition.doesNotConsumeHunger && !PhysicVariables.funnyMode) {
+            tooltip.add(Component.translatable("gui.yo_hooks.hooks.desc_2").withColor(0xFF5555FF));
+        }
+        if (this.hookDefinition.doesNotBreakFragileBlocks) {
+            tooltip.add(Component.translatable("gui.yo_hooks.hooks.desc_3").withColor(0xFF5555FF));
+        }
+        if (this.hookDefinition.defaultAgilityLevel > 0) {
+            tooltip.add(Component.translatable("gui.yo_hooks.hooks.desc_4", this.hookDefinition.defaultAgilityLevel).withColor(0xFF5555FF));
+        }
+    }
+
+    public void setLengthServerOverlap(int lengthOverlap) {
+        this.lengthOverlap = lengthOverlap;
+    }
+
+    public int getBasicLength() {
+        if (lengthOverlap == null) {
+            return hookDefinition.length;
+        } else {
+            return lengthOverlap;
+        }
+    }
 
     @Override
     public boolean isValidRepairItem(ItemStack itemStack, ItemStack itemStack2) {
@@ -161,7 +163,7 @@ public class HookItem extends Item {
 
     @Override
     public int getEnchantmentValue() {
-      return hookDefinition.enchantability;
+        return hookDefinition.enchantability;
     }
 
 }
